@@ -1,0 +1,24 @@
+(defwindow bar
+  :monitor 0
+  :exclusive true
+  :namespace "widgets"
+  :geometry 
+    (geometry 
+      :width "100%"
+      :anchor "bottom center"
+    )
+  (bar)
+)
+
+(defwindow qsettings
+  :monitor 0
+  :exclusive false
+  :namespace "widgets"
+  :stacking "overlay"
+  :geometry 
+    (geometry
+      :anchor "bottom center"
+      :width "30%"
+    )
+  (qsettings)
+)

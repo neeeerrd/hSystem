@@ -1,0 +1,9 @@
+* {
+  all: unset;
+  font-family: Roboto, "Material Icons";
+}
+
+@import "common/colors.scss"
+
+@import "widgets/bar/bar.scss";
+@import "widgets/qsettings/qsettings.scss";

@@ -1,0 +1,132 @@
+.qsettings-box {
+  background-color: $base-light;
+  padding: 20px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+.music-title {
+  margin-left: 5px;
+}
+
+.scale trough {
+  background-color: $base-light;
+  border-radius: 10px;
+  min-height: 5px;
+}
+
+.scale highlight {
+  background-color: $base-light;
+  border: $base-dark 1px solid;
+  border-radius: 10px;
+  min-height: 5px;
+}
+
+.music-player {
+  padding-right: 10px;
+  padding-left: 10px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  margin-left: 5px;
+  border: $base-dark 1px solid;
+  background-color: $base-light;
+}
+
+.music {
+  padding: 5px;
+  padding-top: 10px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.music-top {
+  min-height: 100px;
+  background-color: transparent;
+}
+
+.music-playpause {
+  margin-right: 5px;
+  border-radius: 10px;
+  border: $base-dark 1px solid;
+  background-color: $base-light;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.music-playpause:hover {
+  background-color: $base-dark;
+}
+
+.music-playpause-icon {
+  margin: 10px;
+}
+
+.open-button {
+  background-color: $base-light;
+  border: $base-dark 1px solid;
+  transition: background-color 0.1s ease-in-out;
+  border-radius: 20px;
+}
+
+.open-button:hover {
+  background-color: $base-dark;
+}
+
+.settings-button {
+  background-color: $base-light;
+  border: $base-dark 1px solid;
+  border-radius: 20px;
+  transition: background-color 0.1s ease-in-out
+}
+
+.settings-button:hover {
+  background-color: $base-dark;
+}
+
+.active {
+  background-color: $primary;
+}
+
+.controls {
+  color: $gray;
+}
+
+.hsystem-tooltip {
+  background-image: linear-gradient(120deg, red, green, blue);
+  padding: 5px;
+  border-radius: 10px;
+  border: $base-dark 1px solid;
+  animation: gradient-anim 2s linear infinite;
+  animation-play-state: running;
+  background-size: 500%;
+}
+
+@keyframes gradient-anim { 
+    0% {
+      background-position: 0%;
+    }
+    50% {
+      background-position: 100%;
+    }
+    100%{
+      background-position: 0%;
+    }
+}
+
+.settings-revealer {
+  padding: 5px;
+  background-color: $base-light;
+  border: $base-dark 1px solid;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.network {
+  min-height: 40px;
+  background-color: $base-light;
+  border: $base-dark 1px solid;
+  border-radius: 40px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}

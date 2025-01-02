@@ -1,0 +1,30 @@
+.bar {
+  background-color: $base-light;
+  padding: 4px;
+}
+
+.bar-module {
+  background-color: $base-light;
+  border-radius: 7.5px;
+  transition: all 0.1s ease-in-out;
+}
+
+.bar-module:hover {
+  background-color: $base-dark;
+}
+
+.qsettings-button {
+  background-image: linear-gradient(150deg, $primary, $secondary);
+  border-radius: 7.5px;
+  border: 1px $base-light solid;
+  transition: border-radius 0.1s ease-in-out;
+}
+
+.qsettings-button:hover {
+  border-radius: 10px;
+}
+
+.music-artist {
+  margin-left: 5px;
+  color: $gray; 
+}

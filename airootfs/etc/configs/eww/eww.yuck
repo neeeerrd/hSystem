@@ -1,0 +1,6 @@
+(include "windows.yuck")
+
+(include "common/hoverbox.yuck")
+
+(include "widgets/bar/bar.yuck")
+(include "widgets/qsettings/qsettings.yuck")

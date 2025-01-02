@@ -1,0 +1,61 @@
+(deflisten title
+  `playerctl --follow metadata title`  
+)
+
+(deflisten artist
+  `playerctl --follow metadata artist`
+)
+
+(defwidget bar []
+  (box
+    :class "bar" 
+    :orientation "h"
+    :space-evenly true
+    (hoverbox
+      :class "bar-module"
+      :text ""
+      :onclick "rofi -show drun & disown"
+      :halign "start"
+    )
+    (eventbox
+      :halign "center"
+      :onclick "scripts/toggle_variable.sh qsettings_state"
+      :class "qsettings-button"
+      (box
+        :style "margin: 5px;"
+        :orientation "h"
+        :space-evenly false
+        (label
+          :text {title != "" ? title : "Nothing playing"}
+        )
+        (label
+          :class "music-artist"
+          :text {artist != "" ? artist : "h"}
+        )
+      )
+    )
+    (box
+      :halign "end"
+      :orientation "h"
+      :space-evenly false
+      (label
+        :style "margin-right: 5px;"
+        :text "${EWW_BATTERY["BAT0"]["capacity"]}%"
+      )
+      (systray
+        :orientation "h"
+        :space-evenly true
+        :class "bar-module"
+        :style "margin-right: 5px;"
+        :icon-size 16
+        :spacing 5
+      )
+      (hoverbox
+        :class "bar-module"
+        :text "${formattime(EWW_TIME, "%I:%M %P")}"
+        :onclick "alacritty --class 'floating' -e ./scripts/h.sh & disown"
+        :halign "end"
+      )
+    )
+  )
+)

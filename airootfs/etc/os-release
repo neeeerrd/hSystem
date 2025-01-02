@@ -1,0 +1,9 @@
+NAME="hSystem"
+PRETTY_NAME="hSystem 25.01-beta1"
+ID=hsystem
+RELEASE_TYPE=experiment
+EXPERIMENT="test if everything works"
+VERSION="25.01-beta1"
+ANSI_COLOR="0;31"
+HOME_URL="https://github.com/neeeeerrd/hSystem"
+BUG_REPORT_URL="https://github.com/neeeerrd/hSystem/issues"

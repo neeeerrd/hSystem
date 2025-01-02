@@ -1,0 +1,322 @@
+(defvar qsettings_state false)
+
+(defpoll bluetooth
+  :interval "2s"
+  `./scripts/bluetooth.sh`
+)
+
+(defpoll wifi
+  :interval "2s"
+  `./scripts/wifi.sh`
+)
+
+(deflisten albumArt
+  `playerctl --follow metadata mpris:artUrl`  
+)
+
+(deflisten player
+  `playerctl --follow metadata --format "{{playerName}}"`
+)
+
+(deflisten length
+  `playerctl --follow metadata mpris:length`
+)
+
+(deflisten position
+  `playerctl --follow metadata --format "{{position}}"`
+)
+
+(deflisten status
+  `playerctl --follow status`
+)
+
+(defpoll volume
+  :interval "0.5s"
+  :run-while qsettings_state
+  `wpctl get-volume @DEFAULT_SINK@ | awk '{ print $2; }'`
+)
+
+(defpoll muted
+  :interval "0.5s"
+  :run-while qsettings_state
+  `wpctl get-volume @DEFAULT_SINK@ | awk '{ print $3; }'`
+)
+
+(defpoll brightness
+  :interval "0.5s"
+  :run-while qsettings_state
+  `brightnessctl get`
+)
+
+;eww doesnt support setting static variable values to a command's output
+(defpoll max_bright
+  :interval "10000000000000000000s"
+  :run-while qsettings_state
+  `brightnessctl max`
+)
+
+(defvar index 0)
+(defvar settings_state false)
+
+(defwidget music []
+  (revealer 
+    :transition "slideup"
+    :reveal {position == "" ? false : true}
+    :duration "100ms"
+    (box
+      :orientation "v"
+      :class "music"
+      :style "background-image: radial-gradient(circle at top center, transparent, rgba(0,0,0,0.5)), url('${albumArt}');"
+      :space-evenly false
+      (box
+        :orientation "v"
+        :class "music-top"
+        :space-evenly false
+        (label
+          :halign "start"
+          :class "music-player"
+          :text player
+        )
+        (box
+          :orientation "h"
+          :space-evenly true
+          (box
+            :orientation "v"
+            :space-evenly false
+            (label
+              :halign "start"
+              :class "music-title"
+              :text title
+            )
+            (label
+              :halign "start"
+              :class "music-artist"
+              :text artist
+            )
+          )
+          (eventbox
+            :halign "end"
+            :class "music-playpause"
+            :onclick "playerctl play-pause"
+            (label
+              :style "font-size: 20px;"
+              :text {status == "Playing" ? "" : ""}
+              :class "music-playpause-icon"
+            )
+          )
+        )
+      )
+      (box
+        :orientation "h"
+        :space-evenly false
+        (button
+          :onclick "playerctl previous"
+          (label
+            :class "controls"
+            :style "font-size: 20px;"
+            :text ""
+          )
+        )
+        (scale
+          :class "scale"
+          :orientation "h"
+          :hexpand true
+          :valign "center"
+          :min 0
+          :max {length / 1000000}
+          :value {position / 1000000}
+          :active true
+          :onchange "playerctl position {}"
+        )
+        (button
+          :onclick "playerctl next"
+          (label
+            :class "controls"
+            :style "font-size: 20px;"
+            :text ""
+          )
+        )
+      )
+    )
+  )
+)
+
+(defwidget settings []
+  (box
+    :orientation "v"
+    :space-evenly false
+    (box
+      :orientation "h"
+      :style "margin-bottom: 10px;"
+      :space-evenly false
+      (button
+        :style "margin-right: 5px;"
+        :onclick "wpctl set-mute @DEFAULT_SINK@ toggle"
+        {muted == "[MUTED]" ? "" : volume >= 50 ? "" : volume > 0 ? "" : ""}
+      )
+      (scale
+        :class "scale"
+        :orientation "h"
+        :hexpand true
+        :min 0
+        :max 100
+        :value {volume * 100}
+        :active true
+        :onchange "wpctl set-volume @DEFAULT_SINK@ {}%"
+      )
+    )
+    (box
+      :orientation "h"
+      :style "margin-bottom: 10px;"
+      :space-evenly false
+      (label
+        :style "margin-right: 5px;"
+        :text ""
+      )
+      (scale
+        :class "scale"
+        :orientation "h"
+        :hexpand true
+        :min 0
+        :max max_bright
+        :value brightness
+        :active true
+        :onchange "brightnessctl set {}"
+      )
+    )
+    (box
+      :orientation "h"
+      :space-evenly true
+      :style "margin-bottom: 10px;"
+      (box
+        :orientation "h"
+        :style "margin-right: 2.5px;"
+        (settingsbox
+          :icon ""
+          :text {wifi["enabled"] == true ? wifi["connected"] == true ? wifi["ssid"] : "Not connected" : "Turned off"}
+          :command "eww update settings_state=true"
+          :active {wifi["enabled"]}
+        )
+      )
+      (box
+        :orientation "h"
+        :style "margin-left: 2.5px;"
+        (settingsbox
+          :icon ""
+          :text {bluetooth["name"] != "" ? bluetooth["name"] : "Not connected"}
+          :command "blueman-manager & disown & eww update qsettings_state=false"
+          :active {bluetooth["powered"] == "yes" ? true : false}
+        )
+      )
+    )
+    (revealer
+      :transition "slidedown"
+      :reveal settings_state
+      :duration "100ms"
+        (box
+          :orientation "v"
+          :class "settings-revealer"
+          :space-evenly false
+          (box
+            :orientation "h"
+            :space-evenly false
+            (label
+              :halign "center"
+              :class "bigtext"
+              :text "Internet"
+              :hexpand true
+            )
+            (hoverbox
+              :class "settings-button bigtext"
+              :halign "end"
+              :onclick "eww update settings_state=false"
+              :text ""
+            )
+          )
+          (box
+            :orientation "v"
+            :space-evenly false
+            (for network in {wifi["networks"]}
+              (button
+                :class "network"
+                :onclick {network["password_required"] == true ? "scripts/wifi_connect.sh password_required ${network["ssid"]} & eww update qsettings_state=false" : "scripts/wifi_connect.sh ${network["ssid"]} & eww update qsettings_state=false"}
+                (box
+                  :style "margin: 0px 20px;"
+                  :orientation "h"
+                  :space-evenly true
+                  (label
+                    :halign "start"
+                    :text {network["ssid"]}
+                  )
+                  (label
+                    :halign "end"
+                    :text {network["password_required"] == true ? "" : ""}
+                  )
+                )
+              )
+            )
+          )
+      )
+    )
+  )
+)
+
+(defwidget settingsbox [icon text active command]
+  (eventbox
+    :onclick command
+    :class "settings-button ${active == true ? "active" : ""}"
+    (box
+      :style "margin: 10px 5px 10px;"
+      :orientation "h"
+      :space-evenly false
+      (label
+        :text icon
+        :style "margin-right: 5px; margin-left: 5px;"
+      )
+      (label
+        :text text
+      )
+    )
+  )
+)
+
+(defwidget qsettings []
+  (revealer
+    :transition "slideup"
+    :reveal qsettings_state
+    :duration "100ms"
+    (box
+      :orientation "v"
+      :space-evenly false
+      :class "qsettings-box"
+      (settings)
+      (music)
+      (box
+        :orientation "h"
+        :space-evenly true
+        :style "margin-top: 10px;"
+        (tooltip
+          :halign "start"
+          (label
+            :text "Somehow hasn't crashed yet! Uh I mean h"
+            :class "hsystem-tooltip"
+          )
+          (label
+            :text "hSystem"
+          )
+        )
+        (box
+          :orientation "h"
+          :space-evenly false
+          :halign "end"
+          (hoverbox
+            :class "open-button"
+            :text ""
+            :onclick "xdg-open https://github.com/neeeerrd/hsystem/issues & eww update qsettings_state=false"
+            :halign "end"
+          )
+        )
+      )
+    )
+  )
+)
