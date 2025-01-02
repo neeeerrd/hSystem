@@ -1,6 +1,6 @@
 > [!WARNING]
 > This operating system is **NOWHERE NEAR STABLE** and is not suitable as a daily driver.
-> Unless you're a big fan of [bugs](#things-that-are-broken). In which case, go for it.
+> Unless you're a big fan of [bugs](#things-that-are-brokennot-readymissing). In which case, go for it.
 
 ![Screenshot](./assets/screenshot.png)
 
